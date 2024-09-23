@@ -1,0 +1,149 @@
+{% extends "network/layout.html" %}
+{% load static %}
+{%block fill %}
+postuser
+{%endblock%}
+{% block body %}
+
+<div id="center">
+    <div id="top">
+        <a href="{% url 'index' %}">All posts</a>
+        {% if user.is_authenticated %}
+            <a class = "active"  href="#" id = "followingPage">Following</a>
+        {% endif %}
+    </div>
+
+    {% if user.is_authenticated %}
+    <form id="createpost" method = "post" action = "{% url 'publish' %}">
+        {% csrf_token %}
+        <img src="{{imageurl}}" alt="userimage">
+        <textarea placeholder="
+ What is happening?!" name = "content"></textarea>
+        <hr>
+        <input type="submit"  value="POST">
+        
+    </form>
+    {% endif %}
+    <div id="allpost">
+        {% for publish in published %}
+
+        <div class="published">
+            <div class="cont">
+                <img src="{{publish.profile_image}}" alt="">
+                <div class="contr">
+                    <div class="contrt">
+                        <a href="#" class = "postuser">{{publish.user}}</a>
+                        <p class = "time">{{publish.time_left}}</p>
+                        
+                    </div>
+                    
+                    <p class = "content">{{publish.content}}</p>
+                </div>
+                
+            </div>
+            
+            
+            
+            <div class="contb">
+                <div class="liking">
+                    <img  class = "likeimg"  src="{% static 'network/like.png' %}" alt="Like">
+                    <p class ="likeNumber">{{publish.likes}}</p>
+                    {% if publish.liked_by_user and button %}
+                    <button data-postid="{{publish.id}}" class = "like">dislike</button>
+                    {% elif button %}
+                    <button data-postid = "{{publish.id}}" class="like">like</button>
+                    {% endif %}
+                </div>
+                <div class="bottom">
+                    {% if request.user.username == publish.user.username %}
+                    <button class="edit" data-postid = "{{publish.id}}">Edit</button>
+                    <button class="delete" data-postid = "{{publish.id}}">Delete</button>
+                    {%endif%}
+                </div>
+
+            </div>
+
+        </div>
+        {%empty%}
+        
+        <div class="published"><h2>Currently you are not following anyone</h2></div>
+    {% endfor %}
+    </div>
+
+</div>
+
+
+<script>
+       document.querySelectorAll('.like').forEach(function(button) {
+    let post_id = button.dataset.postid;
+    button.addEventListener('click', function() {
+        fetch('/like', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                post_id: post_id,
+            })
+        })
+        .then(response => response.json())
+        .then(result => {
+            console.log(result.message);
+            let like_element = this.closest('.published').querySelector('.likeNumber');
+            like_element.textContent = result.likes;
+            
+            // Update the button text based on the current state
+            if (this.innerHTML.trim() === 'like') {
+                this.innerHTML = 'dislike';
+            } else {
+                this.innerHTML = 'like';
+            }
+        })
+        .catch(error => console.log('error', error));
+    });
+});
+            const itemsPerPage = 10;
+    const publishedItems = document.querySelectorAll('.published')
+    function displayItems(page)
+    {
+        publishedItems.forEach(item => {
+        item.style.display = 'none';
+        });
+        const startIndex = (page -1) * itemsPerPage
+        const endIndex = startIndex + itemsPerPage
+        for (let i =startIndex; i < endIndex && i < publishedItems.length; i++)
+        {
+            publishedItems[i].style.display = 'block'
+        }
+    }
+    function createPagination(){
+        
+        const pageCount = Math.ceil(publishedItems.length/itemsPerPage)
+        const paginationContainer = document.createElement('div')
+        document.querySelector('body').append(paginationContainer)
+
+        for(let i = 1; i <= pageCount; i++)
+        {
+            const pageButton = document.createElement('button')
+            pageButton.textContent = i;
+            pageButton.addEventListener('click',()=> displayItems(i))
+            paginationContainer.append(pageButton)
+            
+        }
+    }
+    displayItems(1);
+    createPagination()
+
+    </script>
+
+{% endblock %}
+
+{% block bottom %}
+
+    <img src="{{imageurl}}" alt="userimage">
+
+    <p class = "r postuser">{{user.username}}</h2>
+
+
+
+{% endblock%}

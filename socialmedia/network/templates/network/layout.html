@@ -1,0 +1,102 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}Social Network{% endblock %}</title>
+        <link href="{% static 'network/styles.css' %}" rel="stylesheet">
+        <script src = "{% static 'network/script.js' %}"></script>
+    </head>
+    <body>
+       
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+
+
+              
+                <div>
+                <img id = "x" src="{% static 'network/network.png' %}" alt="">
+                  <ul >
+
+
+                
+                    <li class="nav-item">
+                        <a class="{%block fill %}{%endblock%}" href="#">{{user.username}}</a>
+                    </li>
+             
+                <li class="nav-item">
+                    <a class = "{%block follow %}{%endblock%}" class="nav-link" href="#"> Following </a>
+                </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'index' %}">All Posts</a>
+                    </li>
+
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register' %}">Register</a>
+                        </li>
+                    {% endif %}
+                  </ul>
+                </div>
+                
+                    {% if user.is_authenticated %}
+                    <div class="bottom">
+                 
+                        {% block bottom %}
+                        {% endblock%}
+                
+                </div>
+                {% endif %}
+                
+              </nav>
+              
+                <div class="container-fluid">
+                    {% block body %}
+                    {% endblock %}
+               <div id="right">
+                    <h2>Suggested content</h2>
+                    <div class="cs50">
+                        <h3><a target = "_blank" href="https://learning.edx.org/course/course-v1:HarvardX+CS50+X/home">CS50W</a></h3>
+                        <img src="{%static 'network/cs50.png'%}" alt="">
+                        <p>CS50W: Harvard University's Web Programming with Python and JavaScript is a dynamic course designed to build a strong foundation in modern web development.
+
+                            The course delves into key topics such as web frameworks, databases, and front-end technologies, equipping students with the skills to develop robust and interactive web applications.Known for its hands-on projects and real-world applications.
+
+                        </p>
+                            
+                    </div>
+                    <div class="cs50">
+                        <h3><a target = "_blank" href="https://learning.edx.org/course/course-v1:HarvardX+CS50P+Python/home">Contact me</a></h3>
+                        <ul class="social-media-links">
+                            <li><a target="_blank" href="https://t.me/NathnaelDev"><img src="{% static 'network/telegram.svg'%}" alt=""></a></li>
+                            <li><a target="_blank" href="https://X.com/NathnaelDev"><img src="{% static 'network/x.svg'%}" alt=""></a></li>
+                            <li><a target="_blank" href="https://linkedin.com/in/Nathnael-Tamirat"><img src="{% static 'network/linkedin.svg'%}" alt=""></a></li>
+                            <li><a target="_blank" href="https://www.github.com/nathnael1"><img src="{% static 'network/github.svg'%}" alt=""></a></li>
+                        </ul> 
+
+                            
+                    </div>
+               </div>
+            </div>
+             
+
+       
+        <script>
+            const rightElement = document.getElementById("right");
+            let counter = 0
+            document.addEventListener("scroll", function() {
+                rightElement.style.height = (window.innerHeight+window.scrollY)+'px'; 
+
+
+            });
+            console.log(window.scrollY)
+        </script>
+
+    </body>
+</html>

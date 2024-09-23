@@ -1,0 +1,29 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="{% static 'network/styles.css' %}" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+</head>
+<body>
+    <div class="setprofile">
+        <img src="{% static 'network/network.png' %}" alt="X">
+        <h1>
+            Set your Profile
+        </h1>
+        <form action="{% url 'profile' %}" method="post">
+            {% csrf_token %}
+            <input type="text" name="bio" placeholder="Bio" >
+            <input type="text" name = "imagelink" placeholder="imagelink">
+            <input type="submit" value="Save">
+        </form>
+    </div>
+</body>
+</html>
+
+
+
+

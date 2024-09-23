@@ -1,0 +1,217 @@
+
+{% extends "network/layout.html" %}
+{%block follow %}fol{%endblock%}
+{% load static %}
+
+    {% block body %}
+    
+    <div id="cont">
+        <h1>
+            {{username}}
+        </h1>
+        <div class="profile">
+            <div class="profileinprofile">
+                <div class="pl">
+                    <img src="{{image_link}}" alt="">
+                </div>
+                <div class="pr">
+                    <p>{{username}}</p>
+                    <p><strong>Bio:</strong>{{bio}}</p>
+                </div>
+                
+            </div>
+
+                <div class="pshow">
+                    <p id = "followers">Followers {{followers}}</p>
+                    <p id = "following">Following {{following}}</p>
+                    <p id = "postNumber">Posts {{postNumber}}</p>
+                </div>
+                <div class="dfollowUnfollow">
+                    {% if request.user.is_authenticated and request.user.username != username %}
+                    {% if followed %}
+        
+                        
+                        <button class = "followUnfollow" id = "unfollow" data-user =  {{username|urlencode}}>Unfollow</button>
+        
+                    {%else%}
+        
+                        <button class = "followUnfollow" id = "follow" data-user =  {{username|urlencode}}>Follow</button>
+                    {%endif%}
+                    {% endif %}
+                </div>
+ 
+        </div>
+        
+        <div id="allpost">
+            {% for publish in publishes %}
+    
+            <div class="published">
+                <div class="cont">
+                    <img src="{{publish.profile_image}}" alt="">
+                    <div class="contr">
+                        <div class="contrt">
+                            <a href="#" class = "postuser">{{publish.user}}</a>
+                            <p class = "time">{{publish.time_left}}</p>
+                            
+                        </div>
+                        
+                        <p class = "content">{{publish.content}}</p>
+                    </div>
+                    
+                </div>
+                
+                
+                
+                <div class="contb">
+                    <div class="liking">
+                        <img  class = "likeimg"  src="{% static 'network/like.png' %}" alt="Like">
+                        <p class ="likeNumber">{{publish.likes}}</p>
+                        {% if publish.liked_by_user and button %}
+                        <button data-postid="{{publish.id}}" class = "like">dislike</button>
+                        {% elif button %}
+                        <button data-postid = "{{publish.id}}" class="like">like</button>
+                        {% endif %}
+                    </div>
+                    <div class="bottom">
+                        {% if request.user.username == publish.user.username %}
+                        <button class="edit" data-postid = "{{publish.id}}">Edit</button>
+                        <button class="delete" data-postid = "{{publish.id}}">Delete</button>
+                        {%endif%}
+                    </div>
+    
+                </div>
+    
+            </div>
+            {%empty%}
+            <div class="published"><h2>No Posts</h2></div>
+        {% endfor %}
+        </div>
+            <script>
+                //following page
+                document.querySelectorAll('.fol').forEach(element => {
+        element.addEventListener('click',(event)=>{
+        
+            event.preventDefault()
+            window.location.href = `/following`
+        })
+    })
+                        //delete post
+            document.querySelectorAll('.delete').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    let post_id = button.dataset.postid;
+                    fetch('/delete', {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            post_id: post_id,
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        console.log(result.message);
+                        button.closest('.published').style.display = 'none';
+                        document.getElementById('postNumber').innerHTML = `Posts: ${result.posts}`
+                    })
+                })
+    
+            })
+            //like and dislike
+            document.querySelectorAll('.like').forEach(function(button) {
+        let post_id = button.dataset.postid;
+        button.addEventListener('click', function() {
+            fetch('/like', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    post_id: post_id,
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                console.log(result.message);
+                let like_element = this.closest('.published').querySelector('.likeNumber');
+                like_element.innerHTML = `Likes: ${result.likes}`;
+                
+                // Update the button text based on the current state
+                if (this.innerHTML.trim() === 'like') {
+                    this.innerHTML = 'dislike';
+                } else {
+                    this.innerHTML = 'like';
+                }
+            })
+            .catch(error => console.log('error', error));
+        });
+    });
+                
+        //editing post
+        document.querySelectorAll('.edit').forEach(function(button) {
+            button.addEventListener('click', function() {
+                let content = this.closest('.published').querySelector('.content').innerHTML;
+                let post_id = button.dataset.postid
+                
+                console.log(post_id)
+                this.closest('.published').querySelector('.content').style.display="none";
+                this.closest('.published').querySelector('.time').style.display="none";
+                this.closest('.published').querySelector('.like').style.display="none";
+                this.closest('.published').querySelector('.edit').style.display="none";
+                this.closest('.published').querySelector('.delete').style.display="none";
+                
+                text = document.createElement('textarea')
+                save = document.createElement('button')
+                save.innerHTML = 'Save'
+                text.innerHTML = content
+                this.closest('.published').append(text)
+                this.closest('.published').append(save)
+                save.addEventListener('click',()=>{
+                    content = text.value
+       
+                    fetch('/edit',{
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    post_id: post_id,
+                                    content: content,
+                                    
+                                })
+                            })
+                                .then(response => response.json())
+                                .then(result => {
+                                    console.log(result.message)
+                                   text.style.display="none";
+                                     save.style.display="none";
+    
+                                    this.closest('.published').querySelector('.content').style.display="block";
+                                    this.closest('.published').querySelector('.time').style.display="block";
+                                    this.closest('.published').querySelector('.like').style.display="block";
+                                    this.closest('.published').querySelector('.edit').style.display="block";
+                                    this.closest('.published').querySelector('.delete').style.display="block";
+                                    this.closest('.published').querySelector('.content').innerHTML = content
+                    })
+                                .catch(error => console.log('error', error))
+                    
+                })
+            });
+        });
+            </script>
+        
+    
+
+       
+    </div>
+    {% endblock %}
+
+    {% block bottom %}
+
+    <img src="{{imageurl}}" alt="userimage">
+
+    <p class = "r postuser">{{user.username}}</h2>
+
+
+
+{% endblock%}
