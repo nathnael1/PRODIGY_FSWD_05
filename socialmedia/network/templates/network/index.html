@@ -21,7 +21,7 @@ postuser
 {% if user.is_authenticated %}
     <form id="createpost" method = "post" action = "{% url 'publish' %}">
         {% csrf_token %}
-        <img src="{{imageurl}}" alt="userimage">
+        <img class = "personimage5" src="{{imageurl}}" alt="userimage">
         <textarea placeholder="
  What is happening?!" name = "content"></textarea>
         <hr>
@@ -34,7 +34,7 @@ postuser
 
         <div class="published">
             <div class="cont">
-                <img src="{{publish.profile_image}}" alt="">
+                <img class = "personimage" src="{{publish.profile_image}}" alt="">
                 <div class="contr">
                     <div class="contrt">
                         <a href="#" class = "postuser">{{publish.user}}</a>
@@ -229,7 +229,7 @@ postuser
 {% endblock %}
 {% block bottom %}
 
-    <img src="{{imageurl}}" alt="userimage">
+    <img class = "personimage1"src="{{imageurl}}" alt="userimage">
 
     <p class = "r postuser">{{user.username}}</h2>
 
