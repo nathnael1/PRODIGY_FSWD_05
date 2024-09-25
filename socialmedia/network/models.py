@@ -26,7 +26,7 @@ class Publish(models.Model):
     def get_profile_image(self):
         profile = Profile.objects.filter(user=self.user).first()
         if profile:
-            return profile.image_link
+            return profile.image.url
         return None
 
 class Like(models.Model):

@@ -3,6 +3,15 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <style>
+            #pimage{
+                width:30% !important ;
+            }
+            #aboutme{
+                padding:5px;
+                font-size:1rem;
+            }
+        </style>
         <title>{% block title %}Social Network{% endblock %}</title>
         <link href="{% static 'network/styles.css' %}" rel="stylesheet">
         <script src = "{% static 'network/script.js' %}"></script>
@@ -62,12 +71,13 @@
                <div id="right">
                     <h2>Suggested content</h2>
                     <div class="cs50">
-                        <h3><a target = "_blank" href="https://learning.edx.org/course/course-v1:HarvardX+CS50+X/home">CS50W</a></h3>
-                        <img src="{%static 'network/cs50.png'%}" alt="">
-                        <p>CS50W: Harvard University's Web Programming with Python and JavaScript is a dynamic course designed to build a strong foundation in modern web development.
+                        <h3><a target = "_blank" href="https://learning.edx.org/course/course-v1:HarvardX+CS50+X/home">About Me</a></h3>
+                        <img id = "pimage" src="{%static 'network/profile.jpg'%}" alt="">
+                        <p id="aboutme">I am Nathnael Tamirat. The tech field has been my passion since childhood, so I consider myself lucky to work on something I love and enjoy. Currently, I am a full-stack developer and a Google UX-certified UI designer. My strengths lie in my flexibility and commitment.
 
-                            The course delves into key topics such as web frameworks, databases, and front-end technologies, equipping students with the skills to develop robust and interactive web applications.Known for its hands-on projects and real-world applications.
-
+                            I have hands-on experience with Django, Express, Flask, and Node.js, and I am also experienced in API testing and development using Postman. For database management, I have worked with SQL technologies like SQLite3 and PostgreSQL. On the frontend, I have experience with frameworks like Bootstrap and jQuery.
+                            
+                            Although anyone can learn new skills, I believe that teamwork and continuous learning are the keys to success.
                         </p>
                             
                     </div>

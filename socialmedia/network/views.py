@@ -33,7 +33,7 @@ def index(request):
            return HttpResponseRedirect(reverse("profile"))
         if request.session['profileSet']:
             imgurl = Profile.objects.get(user  = request.user)
-            imageurl = imgurl.image_link
+            imageurl = imgurl.image.url
             for publish in published:
                 publish.liked_by_user = publish.liked(request.user)
 
@@ -51,7 +51,7 @@ def index(request):
 def following(request):
     if request.user.is_authenticated:
         imgurl = Profile.objects.get(user  = request.user)
-        imageurl = imgurl.image_link
+        imageurl = imgurl.image.url
         following = Following.objects.filter(user=request.user.id)
         followinglist = [follow.following.id for follow in following]
         published = Publish.objects.filter(user__in=followinglist).order_by('-time')
@@ -128,9 +128,12 @@ def register(request):
 def profile(request):
     if request.method == "POST":
         bio = request.POST["bio"]
-        imagelink = request.POST["imagelink"]
-        profile = Profile(user=request.user,bio=bio,image_link=imagelink,profileSet=True)
+        image = request.FILES.get('image')
+        profile = Profile(user=request.user,bio=bio,profileSet=True)
+        profile.image = image
+        
         profile.save()
+        
         request.session['profileSet'] = profile.profileSet
         return HttpResponseRedirect(reverse("index"))
     return render(request, "network/profile.html")
@@ -152,10 +155,10 @@ def profile_view(request,username):
     user = User.objects.get(username=username)
     username = user.username
     imgurl = Profile.objects.get(user  = request.user)
-    imageurl = imgurl.image_link
+    imageurl = imgurl.image.url
     profile = Profile.objects.get(user=user)
     bio = profile.bio
-    image_link = profile.image_link
+    image_link = profile.image.url
     followers = Followers.objects.filter(user=user).count()
     for follower in Followers.objects.filter(user = user):
         followerpersons.append(follower.follower.username)
